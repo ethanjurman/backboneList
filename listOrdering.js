@@ -1,8 +1,8 @@
 window.onload = function() { // on window load, run the application
     BackboneList = {}; // create object BackboneList
-    BackboneList.Collection = {}; // create object Collection
-    BackboneList.Model = {}; // create model for object
-    BackboneList.View = {}; // view 
+    BackboneList.Collection = {}; 
+    BackboneList.Model = {}; 
+    BackboneList.View = {}; 
 
     BackboneList.Model.Item = Backbone.Model.extend(); // model will extend from the Backbone Model (backbone.js)
     
@@ -11,10 +11,7 @@ window.onload = function() { // on window load, run the application
         tagName: 'li',
         className: 'item-view',
         events: {
-            'drop' : 'drop'
-        },
-        drop: function(event, index) {
-            this.$el.trigger('update-sort', [this.model, index]);
+            
         },        
         render: function() {
             $(this.el).html(this.model.get('name'));
@@ -34,24 +31,28 @@ window.onload = function() { // on window load, run the application
     // collection will extend from Backbone View (backbone.js)
     BackboneList.View.Items = Backbone.View.extend({
         events: {
-            'update-sort': 'updateSort'
+            //'click .button': 'moveUp'
+            'drop': function() { console.log("dropped item"); }
         },
+        
         render: function() {
             this.$el.children().remove();
             this.collection.each(this.appendModelView, this);
             return this;
-        },    
-        appendModelView: function(model) {
-            var el = new BackboneList.View.Item({model: model}).render().el;
-            this.$el.append(el);
         },
-        updateSort: function(event, model, position) {            
-            this.collection.remove(model);
-
+        
+        appendModelView: function(model) {
+            console.log(model);
+            this.$el.append(new BackboneList.View.Item({model: model}).render().el);
+        },
+        
+        moveUp: function(event, model, position) {
+            this.collection.remove(model)    
+            
+            // anonymous function for iterating through items
             this.collection.each(function (model, index) {
                 var ordinal = index;
-                if (index >= position)
-                    ordinal += 1;
+                ordinal += 1;
                 model.set('ordinal', ordinal);
             });            
             
@@ -66,13 +67,13 @@ window.onload = function() { // on window load, run the application
     var Instance = {};
     // Instance collection, new Object from BackboneList (from Backbone.Collection)
     Instance.collection = new BackboneList.Collection.Items();
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Steve Jobs'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Bill Gates'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Mark Zuckerberg'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Elon Musk'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Larry Paige'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Sergey Brin'}));
-    Instance.collection.add(new BackboneList.Model.Item({name: 'Larry Ellison'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 0,name: 'Steve Jobs'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 1,name: 'Bill Gates'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 2,name: 'Mark Zuckerberg'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 3,name: 'Elon Musk'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 4,name: 'Larry Paige'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 5,name: 'Sergey Brin'}));
+    Instance.collection.add(new BackboneList.Model.Item({index: 6,name: 'Larry Ellison'}));
 
     // The collection view comes from the BackboneList (from Backbone.View)
     Instance.collectionView = new BackboneList.View.Items({
